@@ -1,0 +1,23 @@
+# 1. 核心敏感文件（绝对不能传！）
+.env
+config/*.py  # 如果你的 API Key 写在某些 py 文件里，请务必排除
+!config/__init__.py # 允许 init 文件，但里面不能有真实 Key
+
+# 2. Python 运行缓存
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+Agent_env/
+
+# 3. 业务产生的数据与日志
+data/*.json
+data/*.jsonl
+data/*.csv
+data/audit_log.jsonl
+
+# 4. 系统与编辑器文件
+.vscode/
+.idea/
+.DS_Store

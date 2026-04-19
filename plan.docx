@@ -1,0 +1,46 @@
+第一阶段：架构转型 —— 从“对话框”到“事件驱动引擎”
+目标：不再是等着人说话，而是系统自动处理售后工单。
+实现 data/mock_generator.py（事件模拟器）：
+编写一个独立脚本，每隔10秒随机生成一个售后工单（JSON格式，包含：工单ID、订单号、用户描述、本地图片路径）。
+将这些工单写入一个本地队列（可以使用简单的 json 文件，或更高级的 Redis List）。
+重构 main.py（异步监听器）：
+取消 while True: input() 模式。
+改为 asyncio 循环，持续监听上述工单队列。一旦发现新工单，立即启动 graph.invoke()。
+话术准备：这展示了你对“异步非阻塞”和“事件驱动架构（EDA）”的理解。
+
+第二阶段：数据工程 —— 引入 Redis 与持久化记忆
+目标：模拟真实企业中 Agent 如何记住成千上万个用户的状态。
+接入 Redis 存储：
+修改 core/graph.py，将 InMemorySaver 替换为真实的持久化存储（推荐使用 langgraph-checkpoint-redis，或者自己写一个 Redis 读写类）。
+任务：确保即便系统重启，用户的售后处理进度依然能从 Redis 中恢复。
+完善 Mock 数据库 (tools/db_tools.py)：
+不再只存一两个订单，准备一个包含 100 条订单的 orders.json。
+支持模拟“拦截发货”、“退款到账”等状态变更。
+
+第三阶段：能力升级 —— 从“看图说话”到“多模态 RAG”
+目标：体现你“多模态增强 RAG”的原始卖点，这是项目的技术深度所在。
+构建“判罚案例库”：
+在 data/ 下创建一个 policy_cases.json。内容如：{"case_type": "屏幕破碎", "policy": "全额退款", "description": "裂纹呈蜘蛛网状且无法触控"}。
+改造 agent/vision_agent.py：
+逻辑变更为：Ollama 识别特征 -> 将特征作为 Query 在 policy_cases.json 中检索（可以用简单的字符串匹配，也可以用 Embedding 向量检索） -> 找到最相似的政策。
+结果：Agent 输出：“检测到屏幕碎裂。匹配售后政策第 4 条（严重损毁），建议执行全额退款。”
+
+第四阶段：管理运维 —— FinOps 与可观测性
+目标：这是区分“学生项目”和“准商用项目”的关键。
+编写 utils/monitor.py (Token 审计)：
+在每一个 Agent Node 的入口和出口记录：模型名称、输入内容长度、输出内容长度。
+计算公式：根据不同模型的单价（如 GPT-4o-mini 的每百万 Token 价格），计算出该节点的“决策成本”。
+实现“决策分析报告”：
+在 main.py 每次处理完一个工单后，导出一个 summary.json。
+内容包含：工单处理耗时、总消耗 Token 数、总花费（人民币）、最终决策结论（成功/转人工）。
+话术：“我建立了一套精细化的 Token 审计系统，通过对成本的实时监控，实现了售后自动化的投入产出比（ROI）量化分析。”
+
+第五阶段：工程交付 —— 容器化一键部署
+目标：体现工程化思维。
+编写 Dockerfile 和 docker-compose.yml：
+将你的 Python 应用、Redis 容器打包在一起。
+任务：能够做到在任何一台装有 Docker 的电脑上，一行命令 docker-compose up 就能跑通全流程。
+
+第六阶段：收尾工作 —— 安全与合规
+实现 utils/safety.py：
+在 Supervisor 入口处加入过滤，防止注入攻击（Prompt Injection）。
