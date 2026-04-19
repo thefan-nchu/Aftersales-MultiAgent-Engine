@@ -41,19 +41,19 @@ app_state = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # --- 【启动阶段】 ---
-    print("🚀 [System] 正在初始化售后 Agent 引擎...")
+    print("[System] 正在初始化售后 Agent 引擎...")
     try:
         # 预加载图引擎，确保 Redis 连接和索引初始化完成
         app_state["agent_engine"] = await create_after_sales_graph()
-        print("✅ [System] Agent 引擎加载成功，接口已就绪")
+        print("[System] Agent 引擎加载成功，接口已就绪")
     except Exception as e:
-        print(f"❌ [Error] 引擎初始化失败: {e}")
+        print(f"[Error] 引擎初始化失败: {e}")
         raise e
 
     yield  # --- 运行中 ---
 
     # --- 【关闭阶段】 ---
-    print("🛑 [System] 正在关闭服务，清理资源...")
+    print("[System] 正在关闭服务，清理资源...")
     app_state.clear()
 
 
@@ -137,10 +137,8 @@ async def process_aftersales_ticket(req: TicketRequest):
         raise HTTPException(status_code=500, detail=f"内部决策链路故障: {str(e)}")
 
 
-# ==========================================
-# 系统状态与日志接口
-# ==========================================
 
+# 系统状态与日志接口
 @app.get("/v1/system/health")
 async def health_check():
     """健康检查接口"""
