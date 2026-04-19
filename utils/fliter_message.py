@@ -1,4 +1,4 @@
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, RemoveMessage
 
 
 def filter_messages_for_llm(messages):
@@ -8,6 +8,9 @@ def filter_messages_for_llm(messages):
     """
     clean_messages = []
     for msg in messages:
+        # 过滤掉 RemoveMessage
+        if isinstance(msg, RemoveMessage) or msg.__class__.__name__ == 'RemoveMessage':
+            continue
         if isinstance(msg, HumanMessage) and isinstance(msg.content, list):
             # 提取文字内容
             text_content = " ".join([part["text"] for part in msg.content if part["type"] == "text"])
