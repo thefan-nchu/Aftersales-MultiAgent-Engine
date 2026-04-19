@@ -52,7 +52,7 @@ async def get_policy_decision(user_text: str, vision_tags: list, purchase_date_s
         user_days = (CURRENT_TIME - purchase_date).days
     except Exception as e:
         print(f"日期解析失败: {purchase_date_str}, 错误: {e}")
-        # 兜底：如果解析失败，使用当前时间（即认为刚买，对用户最宽容）
+        # 如果解析失败，使用当前时间（即认为刚买，对用户最宽容）
         purchase_date = datetime.now()
         user_days = CURRENT_TIME
 
@@ -90,7 +90,7 @@ async def get_policy_decision(user_text: str, vision_tags: list, purchase_date_s
     # 执行决策降级逻辑
     # 如果用户的购机天数超过了政策规定的保修天数
     if user_days > w_days:
-        # 定义企业降级规则矩阵
+        # 定义降级规则矩阵
         if original_decision in ["REFUND_FULL", "REPLACE_NEW"]:
             # 如果原本是退换货，但超过了时效（例如>15天），降级为保内维修
             # 如果连保修也过了（>365天），则降级为付费维修
@@ -103,9 +103,6 @@ async def get_policy_decision(user_text: str, vision_tags: list, purchase_date_s
         elif original_decision == "PAID_REPAIR":
             # 原本就是自费的，保持不变
             final_decision = "PAID_REPAIR"
-
-    # if not results or results[0][1] < 0.5:  # 假设得分越高越不相关（取决于度量标准）
-    #     return None
 
     return {
         "policy_id": meta["id"],
