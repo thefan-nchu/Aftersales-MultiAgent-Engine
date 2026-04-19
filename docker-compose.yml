@@ -22,7 +22,7 @@ services:
     env_file:
       - .env  # 自动加载你的 API_KEY 和 密码
     environment:
-      # ！！！注意这里：由于在 Docker 内部，localhost 要改成服务名 redis ！！！
+      # 由于在 Docker 内部，localhost 要改成服务名 redis
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
     volumes:
       - ./data:/app/data # 将宿主机的 data 目录挂载，保证审计日志持久化到本地
