@@ -104,14 +104,6 @@ async def vision_node(state: AgentState, config=None):
     """)
 
     # 定义模型
-    # llm = ChatOpenAI(
-    #     model="gpt-4o-mini",
-    #     # model="deepseek-r1:1.5b",
-    #     # api_key="ollama",
-    #     openai_api_key="sk-xxQdZhffEkSiVxlHXM2RR5PeC1cD9yB9bgVsJkr6Hsh31Pll",
-    #     base_url="https://api.chatanywhere.tech/v1",
-    #     # base_url="http://localhost:11434/v1" # one-api的访问地址
-    # )
     llm = ChatOllama(
         model="qwen3-vl:2b",
         base_url="http://localhost:11434",
