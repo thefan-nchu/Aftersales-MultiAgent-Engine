@@ -4,11 +4,12 @@ from operator import add
 from typing import Annotated, TypedDict, List, Optional
 
 from langchain_core.messages import AnyMessage
+from langgraph.graph import add_messages
 
 
 class AgentState(TypedDict):
-    # 消息列表，Annotated[..., add] 表示新消息会追加而不是覆盖
-    messages: Annotated[List[AnyMessage], add]
+    # 消息列表，Annotated[..., add_messages] 表示新消息会追加而不是覆盖
+    messages: Annotated[List[AnyMessage], add_messages]
     # 当前处理的订单号
     order_id: Optional[str]
     # 视觉分析结果（如：屏幕碎裂程度 0.9）
