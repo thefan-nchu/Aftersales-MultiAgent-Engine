@@ -24,7 +24,7 @@ async def handle_ticket(app, ticket_data):
         user_input = ticket_data.get("user_input", "")
         image_path = ticket_data.get("image_path")
 
-        print(f"🔄 [任务启动] ID: {test_id} | 正在分析订单: {order_id}")
+        print(f"[任务启动] ID: {test_id} | 正在分析订单: {order_id}")
 
         # --- 构造多模态消息内容 ---
         content = [{"type": "text", "text": user_input}]
@@ -69,27 +69,27 @@ async def handle_ticket(app, ticket_data):
                         continue  # 跳过 JSON，继续往前找专家的回复
                     break  # 找到了专家的“人话”回复，退出循环
 
-            print(f"✅ [处理成功] ID: {test_id} | 最终决策: {decision}")
-            print(f"💬 系统回复摘要: {ai_reply.replace('\n', ' ').strip()}")
+            print(f"[处理成功] ID: {test_id} | 最终决策: {decision}")
+            print(f"系统回复摘要: {ai_reply.replace('\n', ' ').strip()}")
 
         except Exception as e:
-            print(f"❌ [处理异常] ID: {test_id} | 错误信息: {str(e)}")
+            print(f"[处理异常] ID: {test_id} | 错误信息: {str(e)}")
 
 
 async def main_engine():
     """
     主引擎：持续监听 Redis 队列并派发任务
     """
-    # 2. 初始化持久化 Graph（含 Redis Checkpointer）
+    # 初始化持久化 Graph（含 Redis Checkpointer）
     app = await create_after_sales_graph()
 
-    # 3. 初始化 Redis 连接
+    # 初始化 Redis 连接
     await clear_test_sessions(redis_url=REDIS_URL)
     r = redis.from_url(REDIS_URL, decode_responses=True)
 
     print("\n" + "=" * 60)
-    print("🔥 手机售后智能调度引擎 (v2.0 异步版) 已就绪")
-    print(f"📡 正在监听队列: 'aftersales_tickets_queue' | 最大并发: {MAX_CONCURRENT_TASKS}")
+    print("手机售后智能调度引擎 (v2.0 异步版) 已就绪")
+    print(f"正在监听队列: 'aftersales_tickets_queue' | 最大并发: {MAX_CONCURRENT_TASKS}")
     print("=" * 60 + "\n")
 
     while True:
@@ -102,12 +102,12 @@ async def main_engine():
                 # raw_data 格式为 (key_name, value)
                 ticket_payload = json.loads(raw_data[1])
 
-                # --- 核心亮点：非阻塞派发 ---
+                # 非阻塞派发
                 # 使用 create_task 立即启动协程，然后主循环立刻回到 brpop 等待下一个工单
                 asyncio.create_task(handle_ticket(app, ticket_payload))
 
         except Exception as loop_e:
-            print(f"⚠️ 引擎循环遇到错误: {loop_e}")
+            print(f" 引擎循环遇到错误: {loop_e}")
             await asyncio.sleep(2)  # 遇到连接错误时稍作停顿
 
 
@@ -116,11 +116,10 @@ async def clear_test_sessions(redis_url):
     keys = await r.keys("checkpoint*")
     if keys:
         await r.delete(*keys)
-        print(f"🧹 已清理 {len(keys)} 条旧测试会话数据")
 
 
 if __name__ == "__main__":
     try:
         asyncio.run(main_engine())
     except KeyboardInterrupt:
-        print("\n🛑 售后引擎已安全停止。")
+        print("\n售后引擎已安全停止。")
