@@ -61,11 +61,8 @@ async def logistics_node(state: AgentState, config=None):
 
     llm = ChatOpenAI(
         model="gpt-4o-mini",
-        # model="deepseek-r1:1.5b",
-        # api_key="ollama",
         openai_api_key=OPENAI_API_KEY,
         base_url="https://api.chatanywhere.tech/v1",
-        # base_url="http://localhost:11434/v1" # one-api的访问地址
     )
     # 调用模型
     response = await call_llm_with_fallback(llm, prompts, config=config)
