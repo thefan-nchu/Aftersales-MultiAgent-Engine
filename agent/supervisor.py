@@ -113,19 +113,6 @@ async def supervisor_node(state: AgentState, config=None):
     # 构造消息列表 (System Prompt + 对话历史)
     prompts = [SystemMessage(content=system_prompt)] + safe_messages
 
-    # 定义模型
-    # llm = ChatOllama(
-    #     model="deepseek-r1:1.5b",
-    #     base_url="http://localhost:11434",
-    # )
-    # llm = ChatOpenAI(
-    #     model="gpt-4o-mini",
-    #     # model="deepseek-r1:1.5b",
-    #     # api_key="ollama",
-    #     openai_api_key="sk-xxQdZhffEkSiVxlHXM2RR5PeC1cD9yB9bgVsJkr6Hsh31Pll",
-    #     base_url="https://api.chatanywhere.tech/v1",
-    #     # base_url="http://localhost:11434/v1" # one-api的访问地址
-    # )
     llm = ChatTongyi(
         model="qwen-plus",
         api_key=TONGYI_API_KEY,
