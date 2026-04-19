@@ -9,9 +9,7 @@ from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.messages import AIMessage
 
 
-# ===============================
 # 提取逻辑
-# ===============================
 def extract_usage(response):
     input_t, output_t = 0, 0
     if getattr(response, "llm_output", None):
@@ -31,9 +29,7 @@ def extract_usage(response):
     return input_t, output_t
 
 
-# ===============================
 # Handler 内部存储数据
-# ===============================
 class UnifiedPricingHandler(BaseCallbackHandler):
     def __init__(self):
         self.input_tokens = 0
@@ -46,9 +42,7 @@ class UnifiedPricingHandler(BaseCallbackHandler):
         self.output_tokens = out_t
 
 
-# ===============================
 # 直接从 Handler 获取数据
-# ===============================
 def audit_node(model_name, input_price_per_m, output_price_per_m):
     def decorator(func):
         async def wrapper(state=None, config=None, *args, **kwargs):
