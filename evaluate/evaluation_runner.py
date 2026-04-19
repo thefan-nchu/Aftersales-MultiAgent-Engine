@@ -46,7 +46,7 @@ async def run_batch_evaluation():
             # 运行 Agent
             result = await app.ainvoke(initial_state, config=config)
 
-            # --- 提取回复文本 (倒序查找非 JSON 的 AIMessage) ---
+            # 提取回复文本 (倒序查找非 JSON 的 AIMessage)
             answer = "未生成有效回复"
             for msg in reversed(result.get("messages", [])):
                 if isinstance(msg, AIMessage) and msg.content:
@@ -55,7 +55,7 @@ async def run_batch_evaluation():
                         answer = msg.content
                         break
 
-            # --- 构建 Ragas 要求的四元组 ---
+            # 构建 Ragas 要求的四元组
             eval_results.append({
                 "question": ticket["user_input"],
                 "answer": answer,
@@ -67,7 +67,7 @@ async def run_batch_evaluation():
                 "expected_decision": ticket["expected_decision"]
             })
         except Exception as e:
-            print(f"⚠️ 案例 {test_id} 运行失败: {e}")
+            print(f"案例 {test_id} 运行失败: {e}")
 
     # 保存采集到的原始结果
     os.makedirs("data", exist_ok=True)
