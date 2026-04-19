@@ -58,11 +58,7 @@ async def logistics_node(state: AgentState, config=None):
     """)
     # 构造消息列表 (System Prompt + 对话历史)
     prompts = [SystemMessage(content=system_prompt)] + safe_messages
-    # 定义模型
-    # llm = ChatOllama(
-    #     model="deepseek-r1:1.5b",
-    #     base_url="http://localhost:11434",
-    # )
+
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         # model="deepseek-r1:1.5b",
