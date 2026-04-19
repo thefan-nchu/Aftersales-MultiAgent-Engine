@@ -6,7 +6,7 @@ from langchain_redis import RedisConfig, RedisVectorStore
 
 from config import REDIS_URL
 
-# 1. 初始化环境与配置
+# 初始化环境与配置
 embedding_model = DashScopeEmbeddings(model='text-embedding-v3')
 
 config = RedisConfig(
@@ -14,7 +14,7 @@ config = RedisConfig(
     redis_url=REDIS_URL,
 )
 
-# 2. 初始化向量存储
+# 初始化向量存储
 vector_store = RedisVectorStore(embedding_model, config=config)
 
 
@@ -29,7 +29,6 @@ def _convert_condition_to_days(condition_str: str) -> int:
 
 
 def ingest_phone_policies(json_path: str):
-    # 3. 读取 JSON 文件
     with open(json_path, 'r', encoding='utf-8') as f:
         policies = json.load(f)
 
@@ -53,7 +52,7 @@ def ingest_phone_policies(json_path: str):
         doc = Document(page_content=content, metadata=metadata)
         documents.append(doc)
 
-    # 4. 批量添加到 Redis
+    # 批量添加到 Redis
     print(f"正在向 Redis 灌入 {len(documents)} 条售后政策...")
     vector_store.add_documents(documents)
     print("向量库构建完成！")
