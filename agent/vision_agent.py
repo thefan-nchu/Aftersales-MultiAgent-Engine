@@ -131,6 +131,15 @@ async def vision_node(state: AgentState, config=None):
             messages=vision_input,
             result_format="message",
         )
+        
+        # 注入 monitor 统计 token
+        usage = response.usage
+        if usage:
+            audit_context.set({
+                "input": usage.get("input_tokens", 0),
+                "output": usage.get("output_tokens", 0)
+            })
+        
         # 清洗并解析输出
         content = response.output.choices[0].message.content[0]["text"]
         content = content.replace("```json", "").replace("```", "").strip()
