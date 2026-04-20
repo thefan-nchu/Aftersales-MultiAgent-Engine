@@ -19,7 +19,7 @@ async def produce_tickets():
     with open("../data/test_cases_db.json", "r", encoding="utf-8") as f:
         tickets = json.load(f)[:3]
 
-    print(f"🚀 开始分发 {len(tickets)} 条售后工单...")
+    print(f"开始分发 {len(tickets)} 条售后工单...")
 
     for ticket in tickets:
         # 将工单序列化并推入 Redis 列表（队列）
@@ -28,7 +28,7 @@ async def produce_tickets():
         # 模拟真实间隔，每秒推入 2 条
         await asyncio.sleep(2)
 
-    print("✅ 所有测试用例已进入待处理队列。")
+    print("所有测试用例已进入待处理队列。")
 
 
 if __name__ == "__main__":
