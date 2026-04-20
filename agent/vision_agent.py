@@ -124,9 +124,16 @@ async def vision_node(state: AgentState, config=None):
     ]
 
     try:
-        response = await call_llm_with_fallback(llm, vision_input, config=config)
+        response = await asyncio.to_thread(
+            MultiModalConversation.call,
+            api_key=DASHSCOPE_API_KEY,
+            model="qwen3.6-plus",
+            messages=vision_input,
+            result_format="message",
+        )
         # 清洗并解析输出
-        content = response.content.replace("```json", "").replace("```", "").strip()
+        content = response.output.choices[0].message.content[0]["text"]
+        content = content.replace("```json", "").replace("```", "").strip()
         analysis_result = json.loads(content)
 
         # 4. 更新 state
