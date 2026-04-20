@@ -1,16 +1,21 @@
 # 视觉定损专家（多模态）
 
+import asyncio
 import base64
 import inspect
 import io
 import json
 
+import dashscope
 from PIL import Image
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain_ollama import ChatOllama
+from dashscope import MultiModalConversation
+from langchain_core.messages import HumanMessage, AIMessage
 
+from config import DASHSCOPE_API_KEY
 from core.state import AgentState
-from utils.resilience import call_llm_with_fallback
+from utils.monitor import audit_node
+
+dashscope.base_http_api_url = 'https://dashscope.aliyuncs.com/api/v1'
 
 
 async def vision_node(state: AgentState, config=None):
@@ -103,21 +108,19 @@ async def vision_node(state: AgentState, config=None):
         }
     """)
 
-    # 定义模型
-    llm = ChatOllama(
-        model="qwen3-vl:2b",
-        base_url="http://localhost:11434",
-        temperature=0,
-    )
-
     # 构造多模态输入
     vision_input = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=[
-            {"type": "text", "text": "请分析这张图片。"},
-            {"type": "image_url",
-             "image_url": f"data:image/jpeg;base64,{base64_img}"}
-        ])
+        {
+            "role": "system",
+            "content": [{"text": system_prompt}]  # 必须是列表包装的字典
+        },
+        {
+            "role": "user",
+            "content": [
+                {"image": f"data:image/png;base64,{base64_img}"},
+                {"text": "请分析这张图片。"},
+            ],
+        },
     ]
 
     try:
