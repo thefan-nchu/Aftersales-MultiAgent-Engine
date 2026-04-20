@@ -69,7 +69,7 @@ async def issue_resolution_node(state: AgentState, config=None):
 
     system_prompt = inspect.cleandoc(f"""
         # Role
-        你是一家售后系统决策引擎。你负责基于 RAG 检索结果与订单数据，输出标准化判罚方案。
+        你是一家售后系统决策客服。你负责基于 RAG 检索结果与订单数据，输出判罚方案，语气一定要平和，说话不能太死板。
 
         # 业务数据 (严格遵循)
         - 用户的请求：{user_symptom}
@@ -79,16 +79,10 @@ async def issue_resolution_node(state: AgentState, config=None):
         - 检索依据：{decision_info['policy_content']}
         
         Constraints
-        1. **极度精简**：严禁任何寒暄、解释性废话。直接输出裁决结论。
-        2. **逻辑闭环**：必须包含 [症状确认] -> [特征匹配] -> [政策依据] -> [最终判罚]四个要素。
-        3. **格式严格**：使用中文句号分隔，不要换行。
+        1. 逻辑闭环：必须包含 [症状确认] -> [特征匹配] -> [政策依据] -> [最终判罚]四个要素。
+        2. 格式严格：使用中文句号分隔，不要换行。
+        3. 输出中要包含用户反馈了什么，你诊断出来了什么，最终的诊断结论是什么
         4. 输出中的判罚结论用中文给出
-
-        #输出模板(强制执行)
-        经核实用户反馈'{user_symptom}'，确认为'{'、'.join(visual_features)}'，依据政策'{decision_info['policy_content']}'，判定为{decision_info['final_decision']}
-        
-        #正确示例
-        经核实用户反馈'屏幕裂了'，确认为'撞击点、蜘蛛网纹'，依据政策'非三包范围需付费维修'，判定为付费维修。
     """)
 
     prompts = [SystemMessage(content=system_prompt)] + safe_messages
